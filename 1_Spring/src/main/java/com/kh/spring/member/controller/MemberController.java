@@ -1,23 +1,34 @@
 package com.kh.spring.member.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.kh.spring.member.model.exception.MemberException;
 import com.kh.spring.member.model.service.MemberService;
 import com.kh.spring.member.model.service.MemberServiceImpl;
 import com.kh.spring.member.model.vo.Member;
 
+@SessionAttributes("loginUser")
 @Controller // Controller bean 등록
 public class MemberController {
 	
 	@Autowired
 	private MemberService service;
+	
+	@Autowired
+	private BCryptPasswordEncoder bcrypt;
 	
 //	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
 //	public void login() {
@@ -67,20 +78,197 @@ public class MemberController {
 	
 	
 	// 5. @ModelAttribute 어노테이션 생략
+//	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
+//	public String login(Member m, HttpSession session) {
+//		System.out.println(m);
+//		
+//		// 1. 매 요청마다 새로운 service 객체 만들어짐 (주소값이 계속 변함)
+//		// 2. 클래스 명을 변경한다고 했을 때 직접적인 영향을 받음
+//		// -> 요소마다 결합도가 높다 --> 높은 결합도 낮추기
+////		MemberServiceImpl service = new MemberServiceImpl();
+////		System.out.println(service);
+//		
+//		Member loginUser = service.login(m);
+//		
+////		System.out.println(loginUser);
+//		
+//		if(loginUser != null) {
+//			session.setAttribute("loginUser", loginUser);			
+//		}
+//		
+//		// home.me라서 /WEB-INF/views/member이 기본 경로다
+//		// 상위 폴더로 한 번 가야 한다 = ../
+////		return "../home";
+//		return "redirect:home.do";
+//	}
+	
+	
+	/********* 요청 후 데이터 전달하는 방법 **********/
+	// 1. Model 객체 : 맵 형식(key, value), request scope
+//	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
+//	public String login(Member m, HttpSession session, Model model) {
+//		System.out.println(m);
+//
+//		Member loginUser = service.login(m);
+//
+//		if(loginUser != null) {
+//			session.setAttribute("loginUser", loginUser);			
+//		} else {
+//			model.addAttribute("message", "로그인에 실패하였습니다");
+//			return "../common/errorPage";
+//		}
+//
+//		return "redirect:home.do";
+//	}	
+	
+	// 2. ModelAndView 객체 :Model(맵 형식) + View(뷰 페이지)
+//	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
+//	public ModelAndView login(Member m, HttpSession session, ModelAndView mv) {
+//		System.out.println(m);
+//		
+//		Member loginUser = service.login(m);
+//		
+//		if(loginUser != null) {
+//			session.setAttribute("loginUser", loginUser);	
+////			return "redirect:home.do";
+//			mv.setViewName("redirect:home.do");
+//		} else {
+//			// Model
+////			model.addAttribute("message", "로그인에 실패하였습니다");
+//			mv.addObject("message", "로그인에 실패하였습니다.");
+//			//View
+//			mv.setViewName("../common/errorPage");
+//		}
+//		
+//		return mv;
+//	}	
+	
+//	@RequestMapping("logout.me")
+//	public String logout(HttpSession session) {
+//		session.invalidate();
+//		
+//		return "redirect:home.do";
+//	}
+	
+	// @SessionAttributes 사용 : model에 attribute가 추가될 때 자동으로 키를 찾아 세션에 등록
+//	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
+//	public String login(Member m, Model model) {
+//		System.out.println(m);
+//		
+//		Member loginUser = service.login(m);
+//		
+//		if(loginUser != null) {
+//			model.addAttribute("loginUser", loginUser);	
+//			return "redirect:home.do";
+//		} else {
+//			model.addAttribute("message", "로그인에 실패하였습니다.");
+//			return "../common/errorPage";
+//		}
+//		
+//	}	
+	
+	@RequestMapping("logout.me")
+	public String logout(SessionStatus session) {
+		session.setComplete();
+		
+		return "redirect:home.do";
+	}
+	
+	@RequestMapping("enrollView.me")
+	public String enrollView() {
+		return "memberJoin";
+	}
+	
+
+	@RequestMapping("minsert.me")
+	public String insertMember(@ModelAttribute Member m, @RequestParam("post") String post,
+														 @RequestParam("address1") String address1,
+														 @RequestParam("address2") String address2) {
+		
+		m.setAddress(post + "/" + address1 + "/" + address2);
+		
+		// bcrypt 암호화 방식 사용 : 1차로 암호화한 결과물을 가지고 salt값(랜덤 값)을 이용해 매번 새로운 암호화 데이터 생성
+		String encPwd = bcrypt.encode(m.getPwd());
+		m.setPwd(encPwd);
+		
+		int result = service.insertMember(m);
+		
+		if(result > 0) {
+			return "redirect:home.do";
+		} else {
+			throw new MemberException("회원가입에 실패하였습니다.");
+		}
+		
+	}	
+	
+	
+	// 암호화 후 로그인(로그인 최종본)
 	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
-	public void login(Member m) {
-		System.out.println(m);
-		
-		// 1. 매 요청마다 새로운 service 객체 만들어짐 (주소값이 계속 변함)
-		// 2. 클래스 명을 변경한다고 했을 때 직접적인 영향을 받음
-		// -> 요소마다 결합도가 높다 --> 높은 결합도 낮추기
-//		MemberServiceImpl service = new MemberServiceImpl();
-//		System.out.println(service);
-		
+	public String login(Member m, Model model) {
+//		m.setPwd(bcrypt.encode(m.getPwd()));					
 		Member loginUser = service.login(m);
 		
-		System.out.println(loginUser);
+		boolean match = bcrypt.matches(m.getPwd(), loginUser.getPwd());		
+		
+		if(match) {
+			model.addAttribute("loginUser", loginUser);				
+		} else {
+			throw new MemberException("로그인에 실패했습니다.");
+		}
+		return "redirect:home.do";
+	}	
+	
+	@RequestMapping("myinfo.me")
+	public String myInfoView() {
+		
+		return "mypage";
+
+	}
+	
+	@RequestMapping("mupdateView.me")
+	public String updateForm(@ModelAttribute Member m) {
+		return "memberUpdateForm";
+	}
+	
+	@RequestMapping("mupdate.me")
+	public String updateInfo(@ModelAttribute Member m, HttpSession session, @RequestParam("post") String post,
+																 		    @RequestParam("address1") String address1,
+																	 	    @RequestParam("address2") String address2) {
+		
+		m.setAddress(post + "/" + address1 + "/" + address2);
+		
+		Member loginUser = service.login(m);	
+		
+		int result = service.updateMember(m);
+		
+		System.out.println("로그인 유저 : " + loginUser);
+
+		
+		if(result > 0) {
+			Member newMember = service.login(m);
+			System.out.println("newMember : " + newMember);
+			loginUser = newMember;
+//			System.out.println(loginUser.getNickName());
+			session.setAttribute("loginUser", newMember);
+			System.out.println("loginUser : " + loginUser);
+			return "redirect:myinfo.me";
+		} else {
+			throw new MemberException("회원 정보 수정에 실패하였습니다.");
+		}
 	}
 	
 	
+	@RequestMapping("mpwdUpdateView.me")
+	public String updatePwdForm() {
+		return "memberPwdUpdateForm";
+	}
+		
+	
+	@RequestMapping("mPwdUpdate.me")
+	public String updatePwd(HttpSession session, @RequestParam("pwd") String pwd, @RequestParam("newPwd1") String newPwd1, @RequestParam("newPwd2") String newPwd2) {
+		
+		
+		return "redirect:myinfo.me";
+	}
+
 }

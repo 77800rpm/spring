@@ -21,5 +21,18 @@ public class MemberServiceImpl implements MemberService {
 		
 		return dao.login(sqlSession, m);
 	}
+
+	@Override
+	public int insertMember(Member m) {
+		return dao.insertMember(sqlSession, m);
+	}
+
+	@Override
+	public int updateMember(Member m) {
+
+		return dao.updateMember(sqlSession, m);
+		
+	}
+
 	
 }

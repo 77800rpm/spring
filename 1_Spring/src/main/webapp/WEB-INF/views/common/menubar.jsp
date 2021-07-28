@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src=""></script> 
+<script src="resources/js/jquery-3.6.0.min.js"></script> 
 <style>
 	.nav {margin-left:auto; margin-right:auto; text-align: center;}
 	.menu {
