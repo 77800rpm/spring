@@ -37,5 +37,4 @@ IoC (Inversion of Control)
  
  
  - spring 개요 https://778-it.tistory.com/entry/Spring-Framework
- - maven, spring 설치 및 세팅하기 https://778-it.tistory.com/entry/maven-spring-%EC%84%A4%EC%B9%98-%EC%84%B8%ED%8C%85%ED%95%98%EA%B8%B0
-
+ - maven, spring 설치 및 세팅하기 https://778-it.tistory.com/77
