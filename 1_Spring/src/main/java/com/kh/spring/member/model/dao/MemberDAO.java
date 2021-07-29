@@ -1,5 +1,7 @@
 package com.kh.spring.member.model.dao;
 
+import java.util.HashMap;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +22,17 @@ public class MemberDAO {
 	public int updateMember(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.update("memberMapper.updateMember", m);
 		
+	}
+
+
+	public int updatePwd(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
+		return sqlSession.update("memberMapper.updatePwd", map);
+		
+	}
+
+	public int deleteMember(SqlSessionTemplate sqlSession, String id) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("memberMapper.deleteMember", id);
 	}
 
 	

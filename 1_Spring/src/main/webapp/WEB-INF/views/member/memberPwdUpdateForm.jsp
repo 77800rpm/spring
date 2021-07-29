@@ -17,6 +17,10 @@
 	<div class="centerText">
 		<form action="mPwdUpdate.me" method="post">
 			<table>
+				<tr style="display:none">
+					<th>아이디</th>
+					<td><input type="hidden" name="id" value="${ loginUser.id }"></td>
+				</tr>
 				<tr>
 					<th>현재 비밀번호</th>
 					<td><input type="password" name="pwd"></td>

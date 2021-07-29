@@ -1,5 +1,7 @@
 package com.kh.spring.member.model.service;
 
+import java.util.HashMap;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,18 @@ public class MemberServiceImpl implements MemberService {
 
 		return dao.updateMember(sqlSession, m);
 		
+	}
+
+	@Override
+	public int updatePwd(HashMap<String, String> map) {
+		return dao.updatePwd(sqlSession, map);
+		
+	}
+
+	@Override
+	public int deleteMember(String id) {
+		// TODO Auto-generated method stub
+		return dao.deleteMember(sqlSession, id);
 	}
 
 	

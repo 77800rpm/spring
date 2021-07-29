@@ -1,5 +1,7 @@
 package com.kh.spring.member.controller;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -210,6 +212,7 @@ public class MemberController {
 		
 		boolean match = bcrypt.matches(m.getPwd(), loginUser.getPwd());		
 		
+		
 		if(match) {
 			model.addAttribute("loginUser", loginUser);				
 		} else {
@@ -231,26 +234,26 @@ public class MemberController {
 	}
 	
 	@RequestMapping("mupdate.me")
-	public String updateInfo(@ModelAttribute Member m, HttpSession session, @RequestParam("post") String post,
-																 		    @RequestParam("address1") String address1,
-																	 	    @RequestParam("address2") String address2) {
+	public String updateInfo(@ModelAttribute Member m, Model model, @RequestParam("post") String post,
+																 	@RequestParam("address1") String address1,
+																	@RequestParam("address2") String address2) {
 		
 		m.setAddress(post + "/" + address1 + "/" + address2);
 		
-		Member loginUser = service.login(m);	
+//		Member loginUser = service.login(m);	
 		
 		int result = service.updateMember(m);
 		
-		System.out.println("로그인 유저 : " + loginUser);
+//		System.out.println("로그인 유저 : " + loginUser);
 
 		
 		if(result > 0) {
-			Member newMember = service.login(m);
-			System.out.println("newMember : " + newMember);
-			loginUser = newMember;
-//			System.out.println(loginUser.getNickName());
-			session.setAttribute("loginUser", newMember);
-			System.out.println("loginUser : " + loginUser);
+			Member loginUser = service.login(m);	
+//			Member newMember = service.login(m);
+//			System.out.println("newMember : " + newMember);
+//			loginUser = newMember;
+			model.addAttribute("loginUser", loginUser);
+//			System.out.println("loginUser : " + loginUser);
 			return "redirect:myinfo.me";
 		} else {
 			throw new MemberException("회원 정보 수정에 실패하였습니다.");
@@ -265,10 +268,61 @@ public class MemberController {
 		
 	
 	@RequestMapping("mPwdUpdate.me")
-	public String updatePwd(HttpSession session, @RequestParam("pwd") String pwd, @RequestParam("newPwd1") String newPwd1, @RequestParam("newPwd2") String newPwd2) {
-		
-		
-		return "redirect:myinfo.me";
-	}
+	public String updatePwd(@ModelAttribute Member m, Model model, @RequestParam("pwd") String pwd, @RequestParam("newPwd1") String newPwd1, @RequestParam("newPwd2") String newPwd2) {
 
+//		if(newPwd1 != newPwd2) {
+//			throw new MemberException("새 비밀번호와 새 비밀번호 확인이 서로 일치하지 않습니다.");
+//		}		
+		
+		Member loginUser = service.login(m);	
+		
+//		System.out.println(loginUser);
+
+		
+		String id = loginUser.getId();
+		String pwd1 = loginUser.getPwd();
+//		System.out.println(pwd1);
+		
+
+		String encPwd = bcrypt.encode(newPwd1);
+		
+		HashMap<String, String> map = new HashMap<>();
+		map.put("id", id);
+		map.put("newPwd1", encPwd);
+		
+//		System.out.println(map);
+		
+		int result = service.updatePwd(map);
+		
+		System.out.println(result);
+		
+		if(bcrypt.matches(pwd, pwd1)) {
+		
+			if(result > 0) {	
+				model.addAttribute("loginUser", loginUser);
+				System.out.println(model);
+				return "redirect:myinfo.me";			
+			} else {
+				throw new MemberException("비밀번호 수정에 실패하였습니다.");
+			}
+		
+		} else {
+			throw new MemberException("현재 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.");
+		}
+		
+	}
+	
+	
+	
+	@RequestMapping("mdelete.me")
+	public String deleteMember(@RequestParam("id") String id, SessionStatus status) {
+			int result = service.deleteMember(id);
+		 if(result > 0) {
+			status.setComplete();
+		} else {
+			throw new MemberException("현재 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.");
+		}
+		 
+		 return "redirect:home.do";
+	}
 }

@@ -66,5 +66,20 @@
 		<exception-type>java.lang.Exception</exception-type>
 		<location>/WEB-INF/views/common/errorPage.jsp</location>
 	</error-page>
+	
+	<!-- 게시판 관련 -->
+	<servlet>
+		<servlet-name>boardServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/board-context.xml</param-value>
+		</init-param>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>boardServlet</servlet-name>
+		<url-pattern>*.bo</url-pattern>
+	</servlet-mapping>
 
 </web-app>
