@@ -28,5 +28,39 @@ public class BoardServiceImpl implements BoardService {
 	public ArrayList<Board> selectList(PageInfo pi) {
 		return bDAO.selectList(sqlSession, pi);
 	}
+
+	@Override
+	public int insertBoard(Board b) {
+		return bDAO.insertBoard(sqlSession, b);
+	}
+
+	@Override
+	public Board boardDetail(int bId, boolean check) {	
+		int result = 0;
+		Board board = null;
+		
+		if(check) {
+			result = bDAO.addReadCount(sqlSession, bId);					
+			if(result > 0) {
+				board = bDAO.boardDetail(sqlSession, bId);
+			}
+		} else {
+			board = bDAO.boardDetail(sqlSession, bId);
+		}
+			
+		return board;
+	}
+
+	@Override
+	public int updateBoard(Board b) {
+		return bDAO.updateBoard(sqlSession, b);
+	}
+
+	@Override
+	public int deleteBoard(int bId) {
+		return bDAO.deleteBoard(sqlSession, bId);
+		
+	}
+
 	
 }

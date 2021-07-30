@@ -30,4 +30,40 @@
  		<result column="BOARD_MODIFY_DATE" property="boardModifyDate"/>
  		<result column="BOARD_STATUS" property="boardStatus"/>
  	</resultMap>
+ 	
+ 	<insert id="insertBoard">
+ 		insert into board
+ 		values(seq_bid.nextval, #{boardTitle}, #{boardWriter}, #{boardContent}, #{originalFileName},
+ 			   #{renameFileName}, default, sysdate, sysdate, default)
+ 	</insert>
+ 	
+ 	<select id="boardDetail" resultMap="boardResultSet">
+ 		select board_id, board_title, board_writer, nickname, board_content,
+ 			   original_filename, rename_filename, board_count, board_create_date, board_modify_date, board_status
+ 		from board
+ 			 join member on (id = board_writer)
+ 		where BOARD_ID = #{bId} and BOARD_STATUS = 'Y'
+ 	</select>
+ 	
+ 	<update id="addReadCount">
+ 		update board
+ 		set board_count = board_count + 1
+ 		where board_id = #{bId}
+ 	</update>
+ 	
+ 	<update id="updateBoard">
+		update board
+		set board_title=#{boardTitle}, board_content=#{boardContent}, 
+			<if test="originalFileName != null">
+				original_filename=#{originalFileName},
+			</if>
+			rename_filename=#{renameFileName}, board_modify_date=sysdate
+		where board_Id=#{boardId}		
+ 	</update>
+ 	
+ 	<update id="deleteBoard">
+ 		update board
+ 		set BOARD_STATUS = 'N'
+ 		where board_Id=#{bId}
+ 	</update>
 </mapper>
