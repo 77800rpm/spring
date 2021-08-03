@@ -52,5 +52,10 @@
 		where id=#{id}
 	</update>
 	
+	<select id="duplicateId" resultType="_int">
+		select count(*)
+		from member
+		where id=#{userId}
+	</select>
 			
 </mapper>

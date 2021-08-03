@@ -48,5 +48,10 @@ public class MemberServiceImpl implements MemberService {
 		return dao.deleteMember(sqlSession, id);
 	}
 
+	@Override
+	public int duplicateId(String userId) {
+		// TODO Auto-generated method stub
+		return dao.duplicateId(sqlSession, userId);
+	}
 	
 }

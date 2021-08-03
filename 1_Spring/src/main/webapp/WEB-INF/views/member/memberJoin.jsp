@@ -6,6 +6,11 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" href="${contextPath}/resources/css/member-style.css" type="text/css">
+<style>
+	span.guide{display: none; font-size: 12px; top: 12px; right: 10px;}
+	span.ok{color: green;}
+	span.error{color:red;}
+</style>
 </head>
 <body>
 	<jsp:include page="../common/menubar.jsp"/>
@@ -19,6 +24,9 @@
 					<th>* 아이디</th>
 					<td>
 						<input type="text" name="id" id="userId">
+						<span class="guide ok">이 아이디는 사용 가능합니다.</span>
+						<span class="guide error">이 아이디는 사용할 수 없습니다.</span>
+						<input type="hidden" name="idDuplicateCheck" id="idDuplicateCheck" value="0">
 					</td>
 				</tr>
 				<tr>
@@ -91,5 +99,46 @@
 			</table>
 		</form>
 	</div>
+	
+	<script>
+		$('#userId').on('keyup', function() {
+			var userId = $(this).val().trim();
+			
+			if(userId.length < 4) {
+				$('.guide').hide();
+				$('#idDuplicateCheck').val(0);
+				
+				return;
+			}
+			
+			$.ajax({
+				url: 'dupid.me',
+				data: {userId:userId},
+				success: function(data){
+					console.log(data);
+					// id가 사용 가능한 경우라면, .guide.error은 숨기고 .guide.ok는 노출, idDuplicateCheck에 value 값은 1로 변경
+					if(data.trim() == 'true') {
+						$('.guide.error').hide();
+						$('.guide.ok').show();
+						$('#idDuplicateCheck').val(1);
+					} else {
+					// id가 사용 불가능한 경우라면, .guide.error은 노출하고 .guide.ok는 숨김, idDuplicateCheck에 value 값은 0으로 변경		
+						$('.guide.error').show();
+						$('.guide.ok').hide();
+						$('#idDuplicateCheck').val(0);						
+					}
+								
+				}
+			});
+		});
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	
 </body>
 </html>

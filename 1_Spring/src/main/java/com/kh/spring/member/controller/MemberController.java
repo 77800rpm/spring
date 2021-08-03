@@ -1,8 +1,10 @@
 package com.kh.spring.member.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -324,5 +326,17 @@ public class MemberController {
 		}
 		 
 		 return "redirect:home.do";
+	}
+	
+	@RequestMapping("dupid.me")
+	public void duplicateId(@RequestParam("userId") String userId, HttpServletResponse response) {
+		int result = service.duplicateId(userId);
+		boolean bool = result == 0 ? true : false;
+		try {
+			response.getWriter().println(bool);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -35,5 +35,10 @@ public class MemberDAO {
 		return sqlSession.update("memberMapper.deleteMember", id);
 	}
 
+	public int duplicateId(SqlSessionTemplate sqlSession, String userId) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("memberMapper.duplicateId", userId);		
+	}
+
 	
 }

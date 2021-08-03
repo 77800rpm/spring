@@ -66,4 +66,44 @@
  		set BOARD_STATUS = 'N'
  		where board_Id=#{bId}
  	</update>
+ 	
+ 	<insert id="insertReply">
+ 		insert into reply
+ 		values(seq_rid.nextval, #{replyContent}, #{refBoardId}, #{replyWriter},
+ 				sysdate, sysdate, default)
+ 	</insert>
+ 	
+ 	<select id="selectReplyList" resultMap="replyResultSet">
+ 		select reply_id, reply_content, ref_board_id, reply_writer, nickname,
+ 			   reply_create_date, reply_modify_date, reply_status
+ 		from reply
+ 			 join member on (reply_writer = id)
+ 		where ref_board_id = #{boardId} and reply_status = 'Y'
+ 		order by reply_id desc
+ 	</select>
+ 	
+ 	<resultMap type="Reply" id="replyResultSet">
+ 		<id column="REPLY_ID" property="replyId"/>
+ 		<result column="REPLY_CONTENT" property="replyContent"/>
+ 		<result column="REF_BOARD_ID" property="refBoardId"/>
+ 		<result column="REPLY_WRITER" property="replyWriter"/>
+ 		<result column="NICKNAME" property="nickName"/>
+ 		<result column="REPLY_CREATE_DATE" property="replyCreateDate"/>
+ 		<result column="REPLY_MODIFY_DATE" property="replyModifyDate"/>
+ 		<result column="REPLY_STATUS" property="replyStatus"/>
+ 	</resultMap>
+ 	
+ 	<select id="selectTopList" resultMap="boardResultSet">
+ 		<![CDATA[
+			select *
+			from (select board_id, board_title, board_writer, nickname, board_content, original_filename,
+			             rename_filename, board_count, board_create_date, board_modify_date, board_status
+			      from board
+			           join member on(board_writer = id)
+			      where board_status='Y'
+			      order by board_count desc)
+			where rownum <= 5 		
+		]]>	
+ 	</select>
+ 		
 </mapper>
