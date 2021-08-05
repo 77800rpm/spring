@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,8 @@ public class MemberController {
 	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
+	
+	private Logger logger = LoggerFactory.getLogger(MemberController.class);
 	
 //	@RequestMapping(value = "/login.me", method = RequestMethod.POST)
 //	public void login() {
@@ -180,6 +184,9 @@ public class MemberController {
 	
 	@RequestMapping("enrollView.me")
 	public String enrollView() {
+		if(logger.isDebugEnabled()) { // logger 레벨이 debug인지 확인
+			logger.debug("회원 등록 페이지");
+		}		
 		return "memberJoin";
 	}
 	
@@ -216,7 +223,8 @@ public class MemberController {
 		
 		
 		if(match) {
-			model.addAttribute("loginUser", loginUser);				
+			model.addAttribute("loginUser", loginUser);		
+			logger.info(loginUser.getId());
 		} else {
 			throw new MemberException("로그인에 실패했습니다.");
 		}
