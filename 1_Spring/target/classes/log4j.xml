@@ -113,7 +113,7 @@
    <logger name="com.kh.spring.member.controller.MemberController" additivity="false">
       <level value="debug"/>
       <appender-ref ref="myConsole" />
-      <appender-ref ref="myDailyRollingFile" />
+<!--      <appender-ref ref="myDailyRollingFile" /> --> 
    </logger>
    
    <logger name="jdbc.sqlonly" additivity="false">
@@ -125,6 +125,17 @@
    		<level value="info"/>
    		<appender-ref ref="sqlLogger"/>
    </logger>
+   
+   <logger name="com.kh.spring.common.interceptor.TestInterceptor" additivity="false">
+   		<level value="debug"/>
+   		<appender-ref ref="myConsole"/>
+   </logger>
+   
+   <logger name="com.kh.spring.common.interceptor.LoginInterceptor" additivity="false">
+   		<level value="info"/>
+   		<appender-ref ref="myDailyRollingFile"/>
+   </logger>
+   
    <!-- Root Logger -->
    <!-- 
       Root Logger

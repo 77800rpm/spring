@@ -17,4 +17,16 @@
 	</bean>
 	
 	<context:component-scan base-package="com.kh.spring" /><!-- 등록된 bean의 어노테이션 활성화 -->
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean id="testInterceptor" class="com.kh.spring.common.interceptor.TestInterceptor"/>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/login.me"/>
+			<bean id="loginInterceptor" class="com.kh.spring.common.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
 </beans>
