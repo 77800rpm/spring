@@ -136,6 +136,11 @@
    		<appender-ref ref="myDailyRollingFile"/>
    </logger>
    
+   <logger name="com.kh.spring.common.aop" additivity="false">
+   		<level value="debug"/>
+   		<appender-ref ref="myConsole"/>
+   </logger>
+   
    <!-- Root Logger -->
    <!-- 
       Root Logger

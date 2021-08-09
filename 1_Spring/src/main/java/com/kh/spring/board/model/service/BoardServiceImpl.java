@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.spring.board.model.dao.BoardDAO;
 import com.kh.spring.board.model.vo.Board;
@@ -36,6 +37,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	@Transactional
 	public Board boardDetail(int bId, boolean check) {	
 		int result = 0;
 		Board board = null;
